@@ -32,8 +32,8 @@ cleanly on both macOS and Ubuntu.
 ## First-time setup on a new machine
 
 ```bash
-# Install chezmoi
-sh -c "$(curl -fsLS get.chezmoi.io)"
+# Install chezmoi into ~/.local/bin (already on PATH via .zshrc)
+sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
 
 # Authenticate to GitHub (repo is private)
 gh auth login
