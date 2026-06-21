@@ -6,11 +6,17 @@ brew install neovim gh
 if [ ! -d /Applications/Ghostty.app ] && ! brew list --cask ghostty &>/dev/null; then
   brew install --cask ghostty
 fi
+if ! command -v pipx &>/dev/null; then
+  brew install pipx
+fi
 {{ else -}}
 sudo apt-get update
 sudo apt-get install -y neovim gh git curl zsh
 if [ ! -d /home/linuxbrew/.linuxbrew ]; then
   NONINTERACTIVE=1 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+if ! command -v pipx &>/dev/null; then
+  sudo apt-get install -y pipx
 fi
 {{ end -}}
 
@@ -32,3 +38,7 @@ echo "$PLUGINS" | while read -r name url; do
     git clone --depth 1 "$url" "$dest"
   fi
 done
+
+if ! command -v sgpt &>/dev/null; then
+  pipx install "shell-gpt[litellm]"
+fi
