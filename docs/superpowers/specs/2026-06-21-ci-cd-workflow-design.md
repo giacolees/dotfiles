@@ -7,7 +7,7 @@ Add a GitHub Actions workflow that verifies, on every push and on every PR targe
 ## Scope
 
 - A single workflow file, `.github/workflows/ci.yml`.
-- A matrix job across `ubuntu-latest`, `ubuntu-22.04`, `macos-latest`, `macos-13`.
+- A matrix job across `ubuntu-latest`, `ubuntu-22.04`, `macos-latest`.
 - Verification steps that mirror what has so far been done manually: apply the chezmoi source against the runner's real `$HOME`, confirm `sgpt` installs and is reachable, confirm the `.zshrc` wrapper function shadows it, confirm the bootstrap script and `.zshrc` templates render to syntactically valid bash/zsh.
 - Triggers: `push` (any branch) and `pull_request` targeting `main` or `chezmoi-migration`.
 
@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, macos-latest, macos-13]
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
     runs-on: ${{ matrix.os }}
 ```
 

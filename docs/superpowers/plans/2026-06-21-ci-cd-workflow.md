@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a GitHub Actions workflow that verifies, on every push and PR, that this chezmoi config still applies cleanly across `ubuntu-latest`, `ubuntu-22.04`, `macos-latest`, and `macos-13`.
+**Goal:** Add a GitHub Actions workflow that verifies, on every push and PR, that this chezmoi config still applies cleanly across `ubuntu-latest`, `ubuntu-22.04`, and `macos-latest`.
 
 **Architecture:** A single workflow file (`.github/workflows/ci.yml`) with one matrix job. Each leg checks out the repo, installs chezmoi, runs `chezmoi apply --source "$GITHUB_WORKSPACE" --force` against the runner's real `$HOME`, then runs the same checks already proven manually on this branch: confirm `sgpt` is on `PATH`, confirm the `.zshrc` wrapper function shadows it, and lint both templates (`bash -n` / `zsh -n` on their rendered output).
 
@@ -14,7 +14,7 @@ This repo has no automated test suite — "testing" the workflow means pushing i
 
 - Workflow file path: exactly `.github/workflows/ci.yml`.
 - Triggers: `push` (no branch filter — every branch) and `pull_request` targeting `main` and `chezmoi-migration` only.
-- Matrix: exactly `ubuntu-latest`, `ubuntu-22.04`, `macos-latest`, `macos-13`, with `fail-fast: false`.
+- Matrix: exactly `ubuntu-latest`, `ubuntu-22.04`, `macos-latest`, with `fail-fast: false`.
 - No secrets are referenced or required anywhere in the workflow — CI never has `~/.config/secrets.env`, and nothing in this workflow should assume it exists.
 - `chezmoi apply` runs against `$GITHUB_WORKSPACE` as the source (the already-checked-out repo), not a fresh `chezmoi init` from GitHub — avoids needing any GitHub auth for a private-repo clone inside the job.
 - No deployment, publishing, or release steps — verification only.
@@ -47,7 +47,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, ubuntu-22.04, macos-latest, macos-13]
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -115,7 +115,7 @@ Expected: pushes the new commit to `origin/shellgpt-integration` (already tracke
 
 Run: `gh run watch $(gh run list --branch shellgpt-integration --workflow ci.yml --limit 1 --json databaseId --jq '.[0].databaseId')`
 
-Expected: the command streams live status for all four matrix legs (`verify (ubuntu-latest)`, `verify (ubuntu-22.04)`, `verify (macos-latest)`, `verify (macos-13)`) and exits 0 once all complete successfully.
+Expected: the command streams live status for all four matrix legs (`verify (ubuntu-latest)`, `verify (ubuntu-22.04)`, `verify (macos-latest)`) and exits 0 once all complete successfully.
 
 - [ ] **Step 3: If any leg fails, fix the root cause**
 
@@ -123,7 +123,7 @@ Run: `gh run view --log-failed $(gh run list --branch shellgpt-integration --wor
 
 Read the failing step's output. Common causes to check first:
 - A package name differs between Ubuntu versions (e.g. `pipx` not in `ubuntu-22.04`'s default repos at the same version) — adjust the install step in `run_onchange_install-packages.sh.tmpl` if so, following the existing `command -v` guard pattern already used in that file.
-- A macOS Homebrew formula behaving differently between `macos-latest` and `macos-13` — same fix location.
+- A macOS Homebrew formula behaving differently on `macos-latest` — same fix location.
 
 If a fix is needed, edit the relevant file (not the workflow itself, unless the failure is in the workflow's own step commands), commit, push, and repeat Step 2.
 
