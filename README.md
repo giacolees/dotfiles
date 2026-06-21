@@ -23,6 +23,11 @@ cleanly on both macOS and Ubuntu.
   ensures chezmoi will never pick this file up even by accident.
 - **gh auth is never tracked.** `~/.config/gh/hosts.yml` is excluded — re-run
   `gh auth login` on each machine.
+- **ShellGPT suggestions.** `Ctrl+L` turns the current command-line buffer
+  into a shell-command suggestion via `sgpt --shell`. The active provider is
+  controlled by `SGPT_PROVIDER` (`openrouter` or `gemini`), defaulting to
+  `openrouter` when unset. Switch for a session with
+  `export SGPT_PROVIDER=gemini && exec zsh`.
 
 ## First-time setup on a new machine
 
@@ -49,6 +54,8 @@ machine:
 mkdir -p ~/.config
 cat > ~/.config/secrets.env <<'EOF'
 export ANTHROPIC_API_KEY="your-real-key-here"
+export OPENROUTER_API_KEY="your-real-key-here"
+export GEMINI_API_KEY="your-real-key-here"
 EOF
 chmod 600 ~/.config/secrets.env
 ```

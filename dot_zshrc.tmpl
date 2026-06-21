@@ -56,3 +56,27 @@ gif() { ffmpeg -i "$1" -lavfi "fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[
 
 # Local, untracked secrets (API keys, etc.) — see ~/.config/secrets.env, never committed
 [ -f "$HOME/.config/secrets.env" ] && source "$HOME/.config/secrets.env"
+
+# ShellGPT: provider-switchable shell-command suggestions (Ctrl+L)
+export SGPT_PROVIDER="${SGPT_PROVIDER:-openrouter}"
+sgpt() {
+  local model
+  case "$SGPT_PROVIDER" in
+    openrouter) model="openrouter/anthropic/claude-3.5-sonnet" ;;
+    gemini)     model="gemini/gemini-1.5-pro" ;;
+    *) echo "Unknown SGPT_PROVIDER: $SGPT_PROVIDER" >&2; return 1 ;;
+  esac
+  command sgpt --model "$model" "$@"
+}
+
+_sgpt_zsh() {
+  if [[ -n "$BUFFER" ]]; then
+    local _prev=$BUFFER
+    BUFFER+="⌛"
+    zle -I && zle redisplay
+    BUFFER=$(sgpt --shell <<< "$_prev" --no-interaction)
+    zle end-of-line
+  fi
+}
+zle -N _sgpt_zsh
+bindkey ^l _sgpt_zsh
