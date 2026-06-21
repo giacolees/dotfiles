@@ -60,6 +60,22 @@ EOF
 chmod 600 ~/.config/secrets.env
 ```
 
+### Set your git email
+
+`~/.gitconfig`'s email is templated, not hardcoded. Set it once per machine
+via chezmoi's local (untracked) data file:
+
+```bash
+mkdir -p ~/.config/chezmoi
+cat > ~/.config/chezmoi/chezmoi.toml <<'EOF'
+[data]
+    email = "your-real-email@example.com"
+EOF
+chezmoi apply
+```
+
+If left unset, `~/.gitconfig` falls back to a `your-email@example.com` placeholder.
+
 ## Testing changes before merging to `main`
 
 While a change is still on a feature branch and not yet merged:
