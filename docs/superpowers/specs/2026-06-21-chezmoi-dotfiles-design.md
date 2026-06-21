@@ -20,10 +20,15 @@ templates instead of duplicated files.
 ### Managed by chezmoi
 - `~/.zshrc`
 - `~/.zprofile` (contains Homebrew PATH setup — needs per-OS templating)
-- `~/.config/oh-my-zsh-custom/` (themes/plugins) — *current path is the repo's
-  `oh-my-zsh-custom/`; confirm at migration time whether oh-my-zsh expects this under
-  `~/.oh-my-zsh/custom` or a custom `ZSH_CUSTOM` path, and template that path if it
-  differs across machines.*
+- oh-my-zsh plugins (`zsh-autosuggestions`, `zsh-syntax-highlighting`, `zsh-bat`,
+  `you-should-use`) — **not vendored as files.** Each lives at
+  `~/.oh-my-zsh/custom/plugins/<name>` as its own independent git clone (confirmed:
+  each has its own `.git`). Committing them as files into this repo would create
+  embedded-repository state and repo bloat. Instead, the bootstrap script
+  (`run_onchange_install-packages.sh.tmpl`, see below) `git clone`s each plugin into
+  `~/.oh-my-zsh/custom/plugins/` if not already present. The repo's old
+  `oh-my-zsh-custom/example.zsh` and `example.zsh-theme` scaffolding (unused, from
+  oh-my-zsh's default template) is dropped, not migrated.
 - `~/.config/nvim/` (replacing the manual symlink)
 - `~/.config/ghostty/` (macOS only)
 - `~/.gitconfig`
