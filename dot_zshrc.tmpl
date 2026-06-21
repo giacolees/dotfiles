@@ -62,11 +62,11 @@ export SGPT_PROVIDER="${SGPT_PROVIDER:-openrouter}"
 sgpt() {
   local model
   case "$SGPT_PROVIDER" in
-    openrouter) model="openrouter/anthropic/claude-3.5-sonnet" ;;
-    gemini)     model="gemini/gemini-1.5-pro" ;;
+    openrouter) model="openrouter/openrouter/free"; OPENAI_API_KEY="$OPENROUTER_API_KEY" ;;
+    gemini)     model="gemini/gemini-1.5-pro"; OPENAI_API_KEY="$GEMINI_API_KEY" ;;
     *) echo "Unknown SGPT_PROVIDER: $SGPT_PROVIDER" >&2; return 1 ;;
   esac
-  command sgpt --model "$model" "$@"
+  OPENAI_API_KEY="$OPENAI_API_KEY" command sgpt --model "$model" "$@"
 }
 
 _sgpt_zsh() {
