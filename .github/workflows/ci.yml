@@ -6,6 +6,38 @@ on:
     branches: [main, chezmoi-migration]
 
 jobs:
+  privacy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install gitleaks
+        run: |
+          curl -fsSL -o gitleaks.tar.gz \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.21.2/gitleaks_8.21.2_linux_x64.tar.gz
+          tar -xzf gitleaks.tar.gz gitleaks
+          sudo install gitleaks /usr/local/bin/gitleaks
+
+      - name: Scan full git history for secrets
+        run: gitleaks detect --source "$GITHUB_WORKSPACE" --redact --no-banner
+
+      - name: Verify secrets.env was never committed
+        run: |
+          if git -C "$GITHUB_WORKSPACE" log --all --full-history --name-only --pretty=format: | grep -qx "secrets.env"; then
+            echo "secrets.env appears in git history - it must never be committed" >&2
+            exit 1
+          fi
+
+      - name: Verify no hardcoded personal email outside the placeholder
+        run: |
+          if git -C "$GITHUB_WORKSPACE" grep -InE '[A-Za-z0-9._%+-]+@(gmail|yahoo|outlook|hotmail|icloud)\.[A-Za-z]{2,}' -- . \
+              | grep -v 'your-email@example.com'; then
+            echo "Found a hardcoded personal email address - templatize it instead" >&2
+            exit 1
+          fi
+
   verify:
     strategy:
       fail-fast: false
