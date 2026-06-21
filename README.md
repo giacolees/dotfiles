@@ -1,4 +1,4 @@
-# ShellConfig
+# dotfiles
 
 Cross-platform dotfiles managed with [chezmoi](https://www.chezmoi.io/), applying
 cleanly on both macOS and Ubuntu.
@@ -39,7 +39,7 @@ sh -c "$(curl -fsLS get.chezmoi.io)"
 gh auth login
 
 # Clone and apply
-chezmoi init --apply giacolees/ShellConfig
+chezmoi init --apply giacolees/dotfiles
 ```
 
 This runs the bootstrap script automatically — packages, oh-my-zsh, and
@@ -81,7 +81,7 @@ If left unset, `~/.gitconfig` falls back to a `your-email@example.com` placehold
 While a change is still on a feature branch and not yet merged:
 
 ```bash
-chezmoi init --apply --branch <branch-name> https://github.com/giacolees/ShellConfig.git
+chezmoi init --apply --branch <branch-name> https://github.com/giacolees/dotfiles.git
 ```
 
 Once merged, drop `--branch <branch-name>` to track `main`.
