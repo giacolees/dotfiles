@@ -2,7 +2,10 @@
 set -euo pipefail
 
 {{ if eq .chezmoi.os "darwin" -}}
-brew install neovim gh ghostty
+brew install neovim gh
+if [ ! -d /Applications/Ghostty.app ] && ! brew list --cask ghostty &>/dev/null; then
+  brew install --cask ghostty
+fi
 {{ else -}}
 sudo apt-get update
 sudo apt-get install -y neovim gh git curl zsh
