@@ -1,0 +1,58 @@
+export ZSH="$HOME/.oh-my-zsh"
+
+ZSH_THEME="robbyrussell"
+
+{{ if eq .chezmoi.os "darwin" -}}
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+{{- else -}}
+export PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"
+{{- end }}
+export XDG_CONFIG_HOME="$HOME/.config"
+
+plugins=(git
+        zsh-autosuggestions
+        zsh-syntax-highlighting
+        zsh-bat
+        conda
+        )
+
+source $ZSH/oh-my-zsh.sh
+
+{{ if eq .chezmoi.os "darwin" -}}
+# >>> conda initialize >>>
+__conda_setup="$('/opt/miniconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/miniconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/miniconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/miniconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+
+
+# Added by LM Studio CLI (lms)
+export PATH="$PATH:$HOME/.lmstudio/bin"
+# End of LM Studio CLI section
+
+
+. "$HOME/.local/bin/env"
+
+# Added by Antigravity
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
+# Node 22 (required for VoxRead)
+export PATH="/opt/homebrew/opt/node@22/bin:$PATH"
+
+# Added by Antigravity IDE
+export PATH="$HOME/.antigravity-ide/antigravity-ide/bin:$PATH"
+{{- end }}
+
+gif() { ffmpeg -i "$1" -lavfi "fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=bayer:bayer_scale=5" -y "${2:-output.gif}"; }
+
+# Local, untracked secrets (API keys, etc.) — see ~/.config/secrets.env, never committed
+[ -f "$HOME/.config/secrets.env" ] && source "$HOME/.config/secrets.env"
