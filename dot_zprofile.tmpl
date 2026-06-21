@@ -1,0 +1,17 @@
+{{ if eq .chezmoi.os "darwin" -}}
+# Setting PATH for Python 3.10
+PATH="/Library/Frameworks/Python.framework/Versions/3.10/bin:${PATH}"
+export PATH
+
+# Setting PATH for Python 3.12
+PATH="/Library/Frameworks/Python.framework/Versions/3.12/bin:${PATH}"
+export PATH
+
+# >>> JVM installed by coursier >>>
+export JAVA_HOME="{{ .chezmoi.homeDir }}/Library/Caches/Coursier/arc/https/github.com/adoptium/temurin11-binaries/releases/download/jdk-11.0.26%252B4/OpenJDK11U-jdk_aarch64_mac_hotspot_11.0.26_4.tar.gz/jdk-11.0.26+4/Contents/Home"
+# <<< JVM installed by coursier <<<
+
+# >>> coursier install directory >>>
+export PATH="$PATH:{{ .chezmoi.homeDir }}/Library/Application Support/Coursier/bin"
+# <<< coursier install directory <<<
+{{- end }}
