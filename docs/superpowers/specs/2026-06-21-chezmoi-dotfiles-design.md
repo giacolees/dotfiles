@@ -41,6 +41,24 @@ listed above. These stay untracked and untouched.
   macOS keychain, not the file. Since secret storage backend differs between gh's
   keychain integration (macOS) and its file/keyring fallback (Linux), this file is
   excluded from the repo entirely and left for `gh auth login` to recreate per machine.
+- **`~/.zshrc` contains a live `ANTHROPIC_API_KEY` hardcoded in plaintext, and it is
+  already committed to the `ShellConfig` repo's git history on GitHub.** The leaked
+  key has been revoked/rotated by the user (confirmed 2026-06-21) before this
+  migration proceeds. The migration must:
+  1. Remove the `export ANTHROPIC_API_KEY=...` line from the chezmoi-managed
+     `.zshrc` template entirely — it must not be committed again, on this machine
+     or any other.
+  2. Replace it with a `source`/load from an **untracked** local file, e.g.
+     `~/.config/secrets.env` (added to global gitignore, never added to the repo),
+     containing `export ANTHROPIC_API_KEY="..."`. The `.zshrc` template sources it
+     conditionally (`[ -f "$HOME/.config/secrets.env" ] && source "$HOME/.config/secrets.env"`)
+     so machines without that file don't error.
+  3. Purge the secret from the repo's git history (`git filter-repo` or BFG
+     Repo-Cleaner) and force-push the cleaned history, since simply removing it in a
+     new commit leaves it recoverable from history.
+  4. The new (rotated) key value is never written into any file the migration adds
+     to git — it only ever lives in the untracked `secrets.env` on each machine,
+     set up manually per machine.
 - No other in-scope file contains credentials as of this writing. If that changes,
   the new file must be excluded the same way, not committed.
 
