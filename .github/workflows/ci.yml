@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+    branches: [main, chezmoi-migration]
+
+jobs:
+  verify:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-22.04, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install chezmoi
+        run: |
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/bin"
+          echo "$HOME/bin" >> "$GITHUB_PATH"
+
+      - name: Apply chezmoi config from checked-out source
+        run: chezmoi apply --source "$GITHUB_WORKSPACE" --force
+
+      - name: Verify sgpt is on PATH
+        run: command -v sgpt
+
+      - name: Verify .zshrc wrapper shadows the sgpt binary
+        run: |
+          zsh -ic 'type sgpt' | tee /tmp/sgpt-type.txt
+          grep -q "shell function" /tmp/sgpt-type.txt
+
+      - name: Lint bootstrap script template
+        run: |
+          chezmoi execute-template < "$GITHUB_WORKSPACE/run_onchange_install-packages.sh.tmpl" > /tmp/bootstrap-check.sh
+          bash -n /tmp/bootstrap-check.sh
+
+      - name: Lint .zshrc template
+        run: |
+          chezmoi execute-template < "$GITHUB_WORKSPACE/dot_zshrc.tmpl" > /tmp/zshrc-check.zsh
+          zsh -n /tmp/zshrc-check.zsh
