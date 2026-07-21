@@ -10,19 +10,21 @@ cleanly on both macOS and Ubuntu.
   Ubuntu, macOS-only blocks (conda, LM Studio, Antigravity, Coursier/JVM) skipped
   entirely on Linux.
 - **Automatic bootstrap.** `run_onchange_install-packages.sh.tmpl` installs
-  packages per OS (`brew` on macOS; `apt` + Linuxbrew on Ubuntu), installs
-  oh-my-zsh if missing, and clones the oh-my-zsh plugins
+  packages per OS (`brew` on macOS; `apt` + Linuxbrew on Ubuntu), installs Pi
+  and oh-my-zsh if missing, and clones the oh-my-zsh plugins
   (`zsh-autosuggestions`, `zsh-syntax-highlighting`, `zsh-bat`,
   `you-should-use`) from their upstream repos. It re-runs automatically
   whenever its content changes.
 - **Tracked configs:** `~/.zshrc`, `~/.zprofile`, `~/.gitconfig`,
   `~/.config/git/ignore`, `~/.config/gh/config.yml`, `~/.config/nvim/`,
-  `~/.config/ghostty/config`.
+  `~/.config/ghostty/config`, `~/.pi/agent/settings.json`.
 - **Secrets never committed.** API keys and other secrets live in an untracked
   `~/.config/secrets.env`, sourced by `.zshrc` if present. `.chezmoiignore`
   ensures chezmoi will never pick this file up even by accident.
 - **gh auth is never tracked.** `~/.config/gh/hosts.yml` is excluded — re-run
   `gh auth login` on each machine.
+- **Pi auth is never tracked.** `~/.pi/agent/auth.json` is excluded — run
+  `pi` and use `/login` on each machine.
 - **ShellGPT suggestions.** `Ctrl+L` turns the current command-line buffer
   into a shell-command suggestion via `sgpt --shell`. The active provider is
   controlled by `SGPT_PROVIDER` (`openrouter` or `gemini`), defaulting to
