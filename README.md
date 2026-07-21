@@ -17,7 +17,8 @@ cleanly on both macOS and Ubuntu.
   whenever its content changes.
 - **Tracked configs:** `~/.zshrc`, `~/.zprofile`, `~/.gitconfig`,
   `~/.config/git/ignore`, `~/.config/gh/config.yml`, `~/.config/nvim/`,
-  `~/.config/ghostty/config`, `~/.pi/agent/settings.json`.
+  `~/.config/ghostty/config`, and `~/.pi/agent/settings.json`. Pi settings
+  install the tracked `pi-subagents` skill package and `@plannotator/pi-extension`.
 - **Secrets never committed.** API keys and other secrets live in an untracked
   `~/.config/secrets.env`, sourced by `.zshrc` if present. `.chezmoiignore`
   ensures chezmoi will never pick this file up even by accident.
@@ -40,7 +41,7 @@ Applying these dotfiles manages the following files and bootstrap dependencies:
 | Shell | `.zshrc`, `.zprofile`, oh-my-zsh, and its autosuggestions, syntax-highlighting, bat, and you-should-use plugins |
 | Development | Neovim, Git configuration and global ignore rules, GitHub CLI, and ShellGPT |
 | Terminal | Ghostty configuration (macOS installs the Ghostty cask) |
-| Coding agent | Pi settings, with Pi installed when absent; authenticate separately with `/login` |
+| Coding agent | Pi settings, `pi-subagents` skills, and the Plannotator extension; Pi is installed when absent; authenticate separately with `/login` |
 | Platform tools | macOS: Homebrew packages; Ubuntu: `apt` packages, Linuxbrew (if missing), Git, curl, and Zsh |
 
 ## First-time setup on a new machine

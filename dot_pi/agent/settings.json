@@ -1,5 +1,9 @@
 {
   "theme": "light",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.6-terra"
+  "defaultModel": "gpt-5.6-terra",
+  "packages": [
+    "npm:pi-subagents",
+    "npm:@plannotator/pi-extension"
+  ]
 }
