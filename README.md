@@ -31,6 +31,18 @@ cleanly on both macOS and Ubuntu.
   `openrouter` when unset. Switch for a session with
   `export SGPT_PROVIDER=gemini && exec zsh`.
 
+## What this configuration imports
+
+Applying these dotfiles manages the following files and bootstrap dependencies:
+
+| Category | Imported or installed |
+| --- | --- |
+| Shell | `.zshrc`, `.zprofile`, oh-my-zsh, and its autosuggestions, syntax-highlighting, bat, and you-should-use plugins |
+| Development | Neovim, Git configuration and global ignore rules, GitHub CLI, and ShellGPT |
+| Terminal | Ghostty configuration (macOS installs the Ghostty cask) |
+| Coding agent | Pi settings, with Pi installed when absent; authenticate separately with `/login` |
+| Platform tools | macOS: Homebrew packages; Ubuntu: `apt` packages, Linuxbrew (if missing), Git, curl, and Zsh |
+
 ## First-time setup on a new machine
 
 ```bash
