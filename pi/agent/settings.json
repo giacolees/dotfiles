@@ -1,0 +1,14 @@
+{
+  "lastChangelogVersion": "0.83.0",
+  "theme": "light",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-5.6-terra",
+  "packages": [
+    "npm:pi-chrono",
+    "npm:pi-lens",
+    "npm:pi-web-access",
+    "npm:@dreki-gg/pi-plan-mode",
+    "npm:pi-add-dir",
+    "npm:pi-reload-self"
+  ]
+}

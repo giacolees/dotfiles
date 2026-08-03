@@ -1,0 +1,5 @@
+# macOS Finder metadata
+.DS_Store
+
+# Local secrets loaded by shell configuration
+.config/secrets.env

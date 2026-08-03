@@ -9,6 +9,7 @@
 **Tech Stack:** chezmoi, zsh/oh-my-zsh, Homebrew (macOS) / apt + Linuxbrew (Ubuntu), git, Docker (for Ubuntu verification), `git filter-repo` (history purge).
 
 ## Global Constraints
+
 - No secrets committed to the repo, ever — `ANTHROPIC_API_KEY` and any future secret values live only in untracked `~/.config/secrets.env` on each machine.
 - `~/.config/gh/hosts.yml` is never tracked.
 - Out-of-scope `~/.config` tools (colima, mole, browseruse, swiftpm, xbuild, flutter, NuGet, stetic, steinberg-download-assistant, zotero-mcp) are not touched.
@@ -20,6 +21,7 @@
 ### Task 1: Install chezmoi and restructure the source directory
 
 **Files:**
+
 - Modify (rename in place): `~/dotfiles/.zshrc` → will become `dot_zshrc.tmpl` (Task 4)
 - Modify (rename in place): `~/dotfiles/ghostty/config` → `dot_config/ghostty/config`
 - Modify (rename in place): `~/dotfiles/nvim/` → `dot_config/nvim/`
@@ -27,6 +29,7 @@
 - Delete: `~/dotfiles/.DS_Store`, `~/dotfiles/oh-my-zsh-custom/.DS_Store`
 
 **Interfaces:**
+
 - Produces: chezmoi source directory at `~/.local/share/chezmoi`, a git repo with remote `origin` pointing at `https://github.com/giacolees/ShellConfig`, on branch `main`.
 
 - [ ] **Step 1: Install chezmoi via Homebrew**
@@ -40,6 +43,7 @@ Expected: `chezmoi` binary installed; verify with:
 ```bash
 chezmoi --version
 ```
+
 Expected: prints a version string (e.g. `chezmoi version v2.x.x`).
 
 - [ ] **Step 2: Point chezmoi's source dir at the existing repo**
@@ -54,6 +58,7 @@ Expected: clones the repo into `~/.local/share/chezmoi`. Verify:
 ls ~/.local/share/chezmoi
 cd ~/.local/share/chezmoi && git remote -v
 ```
+
 Expected: shows `.zshrc`, `ghostty/`, `nvim/`, `oh-my-zsh-custom/`, `docs/`; remote shows `giacolees/ShellConfig`.
 
 - [ ] **Step 3: Remove the stray `.DS_Store` files and untrack them**
@@ -66,6 +71,7 @@ printf '.DS_Store\n' >> .gitignore
 git add .gitignore
 git commit -m "chore: ignore .DS_Store"
 ```
+
 Expected: commit succeeds; `git status` is clean.
 
 - [ ] **Step 4: Drop the unused oh-my-zsh scaffolding directory**
@@ -75,6 +81,7 @@ cd ~/.local/share/chezmoi
 git rm -r oh-my-zsh-custom
 git commit -m "chore: drop unused oh-my-zsh example scaffolding (plugins are cloned by bootstrap script instead)"
 ```
+
 Expected: commit succeeds; `oh-my-zsh-custom/` no longer present in the source dir.
 
 ---
@@ -82,11 +89,13 @@ Expected: commit succeeds; `oh-my-zsh-custom/` no longer present in the source d
 ### Task 2: Add static (non-templated) managed files
 
 **Files:**
+
 - Create: `~/.local/share/chezmoi/dot_gitconfig`
 - Create: `~/.local/share/chezmoi/dot_config/git/ignore`
 - Create: `~/.local/share/chezmoi/dot_config/gh/config.yml`
 
 **Interfaces:**
+
 - Consumes: live files `~/.gitconfig`, `~/.config/git/ignore`, `~/.config/gh/config.yml` (read-only source of content).
 - Produces: chezmoi-tracked equivalents that `chezmoi apply` will symlink/copy into place.
 
@@ -95,20 +104,24 @@ Expected: commit succeeds; `oh-my-zsh-custom/` no longer present in the source d
 ```bash
 chezmoi add ~/.gitconfig
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_gitconfig` with current file content. Verify:
+
 ```bash
 cat ~/.local/share/chezmoi/dot_gitconfig
 ```
+
 Expected output matches:
+
 ```
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+ clean = git-lfs clean -- %f
+ smudge = git-lfs smudge -- %f
+ process = git-lfs filter-process
+ required = true
 [user]
-	name = giacolees
-	email = giacomolisita01@gmail.com
+ name = giacolees
+ email = giacomolisita01@gmail.com
 ```
 
 - [ ] **Step 2: Add `~/.config/git/ignore`**
@@ -116,6 +129,7 @@ Expected output matches:
 ```bash
 chezmoi add ~/.config/git/ignore
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_config/git/ignore` containing `**/.claude/settings.local.json`.
 
 - [ ] **Step 3: Add `~/.config/gh/config.yml`** (no secrets in this file — verified earlier; `hosts.yml` is intentionally excluded)
@@ -123,6 +137,7 @@ Expected: creates `~/.local/share/chezmoi/dot_config/git/ignore` containing `**/
 ```bash
 chezmoi add ~/.config/gh/config.yml
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_config/gh/config.yml`.
 
 - [ ] **Step 4: Confirm `hosts.yml` was not picked up**
@@ -130,6 +145,7 @@ Expected: creates `~/.local/share/chezmoi/dot_config/gh/config.yml`.
 ```bash
 find ~/.local/share/chezmoi/dot_config/gh -type f
 ```
+
 Expected: only `config.yml` is listed — no `hosts.yml`, no `private_*` file for it.
 
 - [ ] **Step 5: Commit**
@@ -145,11 +161,13 @@ git commit -m "feat: track gitconfig, git ignore, and gh config via chezmoi"
 ### Task 3: Add nvim and ghostty configs
 
 **Files:**
+
 - Create: `~/.local/share/chezmoi/dot_config/nvim/` (full directory tree from current live `~/.config/nvim`)
 - Create: `~/.local/share/chezmoi/dot_config/ghostty/config`
 - Delete (after apply, Task 7): the manual symlink `~/.config/nvim` → `~/dotfiles/nvim`
 
 **Interfaces:**
+
 - Consumes: live `~/.config/nvim/**`, `~/.config/ghostty/config`.
 - Produces: chezmoi-tracked nvim and ghostty config trees.
 
@@ -158,10 +176,13 @@ git commit -m "feat: track gitconfig, git ignore, and gh config via chezmoi"
 ```bash
 chezmoi add --recursive ~/.config/nvim
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_config/nvim/` mirroring the live tree (`init.lua`, `lua/`, `stylua.toml`, `.neoconf.json`, `.gitignore`). Verify:
+
 ```bash
 diff -r ~/.config/nvim ~/.local/share/chezmoi/dot_config/nvim
 ```
+
 Expected: no output (identical), since `~/.config/nvim` is currently a symlink into the old repo's `nvim/` whose content `chezmoi add` just copied.
 
 - [ ] **Step 2: Add ghostty config**
@@ -169,7 +190,9 @@ Expected: no output (identical), since `~/.config/nvim` is currently a symlink i
 ```bash
 chezmoi add ~/.config/ghostty/config
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_config/ghostty/config` containing:
+
 ```
 theme = dark:Catppuccin Mocha,light:Flexoki Light
 ```
@@ -189,11 +212,13 @@ git commit -m "feat: track nvim and ghostty configs via chezmoi"
 **Context:** The leaked `ANTHROPIC_API_KEY` has already been revoked and rotated by the user (confirmed before this plan was written). This task ensures the new value is never committed, and removes the old line from the file chezmoi will manage going forward. The git-history purge of the *old* commits containing the key is handled separately in Task 8.
 
 **Files:**
+
 - Create: `~/.config/secrets.env` (untracked, machine-local, NOT added to chezmoi)
 - Modify: global `~/.gitignore` (create if absent) to ignore `secrets.env` defensively, even though it's outside any repo chezmoi manages — this guards against someone later `chezmoi add`-ing it by mistake)
 - Create: `~/.local/share/chezmoi/.chezmoiignore` entry for `.config/secrets.env`
 
 **Interfaces:**
+
 - Produces: a file `~/.config/secrets.env` with `export ANTHROPIC_API_KEY="..."`, sourced by `.zshrc` (Task 5) but never tracked by chezmoi or git.
 
 - [ ] **Step 1: Create the untracked secrets file with the rotated key**
@@ -204,7 +229,9 @@ export ANTHROPIC_API_KEY="<paste-the-new-rotated-key-here>"
 EOF
 chmod 600 ~/.config/secrets.env
 ```
+
 Expected: file created, readable only by the user (`-rw-------`). Verify:
+
 ```bash
 ls -l ~/.config/secrets.env
 ```
@@ -219,14 +246,19 @@ EOF
 git add .chezmoiignore
 git commit -m "chore: ensure secrets.env is never managed by chezmoi"
 ```
+
 Expected: commit succeeds. Verify the ignore takes effect:
+
 ```bash
 chezmoi add ~/.config/secrets.env
 ```
+
 Expected: chezmoi reports the path is ignored (no file created under the source dir for it). Confirm:
+
 ```bash
 find ~/.local/share/chezmoi -iname '*secrets*'
 ```
+
 Expected: no output.
 
 ---
@@ -234,10 +266,12 @@ Expected: no output.
 ### Task 5: Templatize `.zshrc` and `.zprofile` for OS differences and secrets loading
 
 **Files:**
+
 - Create: `~/.local/share/chezmoi/dot_zshrc.tmpl`
 - Create: `~/.local/share/chezmoi/dot_zprofile.tmpl`
 
 **Interfaces:**
+
 - Consumes: `.chezmoi.os` (built-in chezmoi template variable, `"darwin"` or `"linux"`).
 - Produces: rendered `~/.zshrc` and `~/.zprofile` on `chezmoi apply`.
 
@@ -246,6 +280,7 @@ Expected: no output.
 ```bash
 chezmoi add --template ~/.zshrc
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_zshrc.tmpl` with the current file content (including the `ANTHROPIC_API_KEY` line and the conda/LM-Studio/Antigravity blocks).
 
 - [ ] **Step 2: Edit `dot_zshrc.tmpl`** — remove the hardcoded key, template the Homebrew path, and source the untracked secrets file
@@ -253,6 +288,7 @@ Expected: creates `~/.local/share/chezmoi/dot_zshrc.tmpl` with the current file 
 ```bash
 chezmoi edit ~/.zshrc
 ```
+
 Replace the entire file content with:
 
 ```
@@ -317,9 +353,11 @@ gif() { ffmpeg -i "$1" -lavfi "fps=15,scale=720:-1:flags=lanczos,split[s0][s1];[
 ```
 
 Expected: the `export ANTHROPIC_API_KEY=...` line is gone from this file entirely. Verify:
+
 ```bash
 grep -i anthropic ~/.local/share/chezmoi/dot_zshrc.tmpl
 ```
+
 Expected: no output.
 
 - [ ] **Step 3: Add `.zprofile` as a template**
@@ -327,6 +365,7 @@ Expected: no output.
 ```bash
 chezmoi add --template ~/.zprofile
 ```
+
 Expected: creates `~/.local/share/chezmoi/dot_zprofile.tmpl`.
 
 - [ ] **Step 4: Edit `dot_zprofile.tmpl`** to gate the macOS-only Python framework paths
@@ -334,6 +373,7 @@ Expected: creates `~/.local/share/chezmoi/dot_zprofile.tmpl`.
 ```bash
 chezmoi edit ~/.zprofile
 ```
+
 Replace content with:
 
 ```
@@ -362,6 +402,7 @@ export PATH="$PATH:{{ .chezmoi.homeDir }}/Library/Application Support/Coursier/b
 chezmoi execute-template < ~/.local/share/chezmoi/dot_zshrc.tmpl | head -20
 chezmoi execute-template < ~/.local/share/chezmoi/dot_zprofile.tmpl | head -10
 ```
+
 Expected: both print rendered shell script with the `darwin` branches active (since this is run on the Mac), no template syntax errors.
 
 - [ ] **Step 6: Commit**
@@ -377,9 +418,11 @@ git commit -m "feat: templatize zshrc/zprofile for macOS/Ubuntu, remove leaked A
 ### Task 6: Write the package/plugin bootstrap script
 
 **Files:**
+
 - Create: `~/.local/share/chezmoi/run_onchange_install-packages.sh.tmpl`
 
 **Interfaces:**
+
 - Consumes: `.chezmoi.os`.
 - Produces: installed packages and cloned oh-my-zsh plugins as a side effect of `chezmoi apply`.
 
@@ -420,6 +463,7 @@ done
 SCRIPT
 chmod +x ~/.local/share/chezmoi/run_onchange_install-packages.sh.tmpl
 ```
+
 Expected: file created and executable.
 
 - [ ] **Step 2: Verify the template renders for the current (darwin) machine**
@@ -427,6 +471,7 @@ Expected: file created and executable.
 ```bash
 chezmoi execute-template < ~/.local/share/chezmoi/run_onchange_install-packages.sh.tmpl
 ```
+
 Expected: output contains `brew install neovim gh ghostty` and not the `apt-get`/Linuxbrew branch.
 
 - [ ] **Step 3: Commit**
@@ -442,10 +487,12 @@ git commit -m "feat: add bootstrap script to install packages and clone oh-my-zs
 ### Task 7: Apply on this Mac and remove the old manual symlinks
 
 **Files:**
+
 - Modify: `~/.zshrc` (replace manual symlink with chezmoi-managed file)
 - Modify: `~/.config/nvim` (replace manual symlink with chezmoi-managed directory)
 
 **Interfaces:**
+
 - Consumes: all chezmoi source files from Tasks 1-6.
 - Produces: live `~/.zshrc`, `~/.zprofile`, `~/.config/nvim`, `~/.config/ghostty/config`, `~/.gitconfig`, `~/.config/git/ignore`, `~/.config/gh/config.yml` managed by chezmoi instead of manual symlinks.
 
@@ -454,6 +501,7 @@ git commit -m "feat: add bootstrap script to install packages and clone oh-my-zs
 ```bash
 chezmoi diff
 ```
+
 Expected: shows the old `~/.zshrc` symlink being replaced by a regular file with rendered template content (no `ANTHROPIC_API_KEY` line), and `~/.config/nvim` symlink being replaced by a real directory. Read through it to confirm nothing unexpected.
 
 - [ ] **Step 2: Remove the old manual symlinks so chezmoi can take over the paths**
@@ -461,6 +509,7 @@ Expected: shows the old `~/.zshrc` symlink being replaced by a regular file with
 ```bash
 rm ~/.zshrc ~/.config/nvim
 ```
+
 Expected: both paths removed (they were symlinks into the old `~/dotfiles` checkout, not the only copy of the data — content is preserved in the chezmoi source dir from Tasks 3 and 5).
 
 - [ ] **Step 3: Apply**
@@ -468,6 +517,7 @@ Expected: both paths removed (they were symlinks into the old `~/dotfiles` check
 ```bash
 chezmoi apply -v
 ```
+
 Expected: creates `~/.zshrc`, `~/.zprofile`, `~/.config/nvim/`, `~/.config/ghostty/config`, `~/.gitconfig`, `~/.config/git/ignore`, `~/.config/gh/config.yml`; runs `run_onchange_install-packages.sh.tmpl` (first run, since it's new) and reports brew installs.
 
 - [ ] **Step 4: Verify idempotency**
@@ -475,11 +525,13 @@ Expected: creates `~/.zshrc`, `~/.zprofile`, `~/.config/nvim/`, `~/.config/ghost
 ```bash
 chezmoi diff
 ```
+
 Expected: no output (nothing left to apply).
 
 ```bash
 chezmoi apply -v
 ```
+
 Expected: no output beyond chezmoi's normal "nothing to do" behavior (the `run_onchange_` script does not re-run since its content hasn't changed).
 
 - [ ] **Step 5: Confirm the new shell works and the key loads from the untracked file**
@@ -487,11 +539,13 @@ Expected: no output beyond chezmoi's normal "nothing to do" behavior (the `run_o
 ```bash
 zsh -ic 'echo $ANTHROPIC_API_KEY' | tail -c 8
 ```
+
 Expected: prints the last few characters of the rotated key (confirming it loaded from `~/.config/secrets.env`, not from any tracked file).
 
 ```bash
 grep -i anthropic ~/.zshrc
 ```
+
 Expected: no output.
 
 - [ ] **Step 6: Push**
@@ -500,6 +554,7 @@ Expected: no output.
 cd ~/.local/share/chezmoi
 git push origin main
 ```
+
 Expected: push succeeds (this only pushes commits made in Tasks 1-6, which no longer contain the key — the *old* commits with the key are still in history at this point, addressed in Task 8).
 
 ---
@@ -521,8 +576,9 @@ brew install git-filter-repo
 ```bash
 cd ~/.local/share/chezmoi
 git log --all -p | grep -l "ANTHROPIC_API_KEY" 2>/dev/null
-git log --all --oneline -S "REDACTED" 
+git log --all --oneline -S "<leaked-key-fingerprint>"
 ```
+
 Expected: lists the commit(s) (at minimum `a8b405f`, the initial commit) containing the key.
 
 - [ ] **Step 3: STOP — confirm with the user before proceeding.** Ask: "About to rewrite `ShellConfig` git history to strip the leaked key and force-push. This rewrites published history — anyone with a clone will need to re-clone. Proceed?" Only continue after explicit yes.
@@ -531,12 +587,17 @@ Expected: lists the commit(s) (at minimum `a8b405f`, the initial commit) contain
 
 ```bash
 cd ~/.local/share/chezmoi
-git filter-repo --replace-text <(echo 'REDACTED_ONCpbLTAhjZ5uOXYYuu0AD_k-HWBPlyy6ZyyXwqIRp572HNVBrZESK1TELkHjmGeCS-5POplWFbQ-RthNoAAA==>REDACTED')
+# Create this untracked file locally; do not write the leaked value into this repo.
+# Its only line must be: <leaked-key>==>REDACTED
+git filter-repo --replace-text /path/to/untracked/replacements.txt
 ```
+
 Expected: `git filter-repo` rewrites all commits, replacing the literal key string with `REDACTED` everywhere it appears in history. Verify:
+
 ```bash
-git log --all -S "REDACTED" --oneline
+git log --all -S "<leaked-key-fingerprint>" --oneline
 ```
+
 Expected: no output (string no longer found in any commit).
 
 - [ ] **Step 5: Re-add the remote (filter-repo removes it by default as a safety measure) and force-push**
@@ -545,6 +606,7 @@ Expected: no output (string no longer found in any commit).
 git remote add origin https://github.com/giacolees/ShellConfig.git
 git push origin main --force
 ```
+
 Expected: push succeeds; GitHub now serves the rewritten history with no trace of the key.
 
 - [ ] **Step 6: Note for the user** — anyone else with a clone of this repo must re-clone rather than pull, since history was rewritten.
@@ -567,6 +629,7 @@ docker run -it --rm ubuntu:24.04 bash
 apt-get update && apt-get install -y curl git sudo zsh
 sh -c "$(curl -fsLS get.chezmoi.io)"
 ```
+
 Expected: `chezmoi` binary available at `~/.local/bin/chezmoi` (or similar); verify with `~/.local/bin/chezmoi --version`.
 
 - [ ] **Step 3: Initialize and apply**
@@ -574,6 +637,7 @@ Expected: `chezmoi` binary available at `~/.local/bin/chezmoi` (or similar); ver
 ```bash
 ~/.local/bin/chezmoi init --apply https://github.com/giacolees/ShellConfig.git
 ```
+
 Expected: clones the repo, renders templates with `.chezmoi.os == "linux"`, runs the bootstrap script's `apt-get`/Linuxbrew/oh-my-zsh-plugin-clone branch, and writes `~/.zshrc`, `~/.zprofile`, `~/.config/nvim`, `~/.gitconfig`, `~/.config/git/ignore`, `~/.config/gh/config.yml`. No `~/.config/ghostty` (correct — it's still tracked in the repo as a static file, but its absence of *use* on Linux is expected since ghostty isn't installed there; the file itself will still be written, which is harmless).
 
 - [ ] **Step 4: Confirm no errors and no leaked key**
@@ -582,11 +646,13 @@ Expected: clones the repo, renders templates with `.chezmoi.os == "linux"`, runs
 zsh -ic 'exit' 
 echo $?
 ```
+
 Expected: `0`, no errors about `ANTHROPIC_API_KEY` or missing `secrets.env` (the `.zshrc` template only sources it `if [ -f ... ]`, so its absence on this fresh container is a silent no-op).
 
 ```bash
 grep -ri anthropic ~/.zshrc ~/.zprofile
 ```
+
 Expected: no output.
 
 - [ ] **Step 5: Confirm Homebrew path branch took the Linux path**
@@ -594,6 +660,7 @@ Expected: no output.
 ```bash
 grep linuxbrew ~/.zshrc
 ```
+
 Expected: one matching line (the `darwin` branch's `/opt/homebrew` lines are absent).
 
 - [ ] **Step 6: Exit and discard the container**
@@ -601,9 +668,11 @@ Expected: one matching line (the `darwin` branch's `/opt/homebrew` lines are abs
 ```bash
 exit
 ```
+
 (Container is `--rm`, so it's discarded automatically — no cleanup needed.)
 
 ## Self-Review Notes
+
 - Spec coverage: all in-scope files (gitconfig, git/ignore, gh config, nvim, ghostty, zshrc, zprofile), OS templating, oh-my-zsh plugin handling, secrets handling, and the key purge are each covered by a task.
 - The leaked-key requirement added to the spec mid-session is fully covered by Tasks 4, 5, and 8.
 - Task 8's force-push is explicitly gated behind a user confirmation step, consistent with the global constraint on shared/hard-to-reverse actions.

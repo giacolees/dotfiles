@@ -1,0 +1,13 @@
+# Generated integration; Herdr recreates this on machines where it is installed.
+extensions/herdr-agent-state.ts
+
+# Credentials and per-machine runtime state
+auth.json
+models-store.json
+sessions/
+
+# Installed extension packages; package manifests remain tracked
+npm/node_modules/
+npm/.package-lock.json
+
+git/
