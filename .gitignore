@@ -3,3 +3,6 @@
 
 # Local secrets loaded by shell configuration
 .config/secrets.env
+
+# Development planning artifacts
+docs/
