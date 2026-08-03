@@ -7,6 +7,6 @@
     "pi-chrono": "^0.3.2",
     "pi-lens": "^3.8.71",
     "pi-reload-self": "^0.1.1",
-    "pi-web-access": "^0.13.0"
+    "pi-web-access": "^0.18.0"
   }
 }

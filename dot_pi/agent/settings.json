@@ -6,9 +6,9 @@
   "packages": [
     "npm:pi-chrono",
     "npm:pi-lens",
-    "npm:pi-web-access",
     "npm:@dreki-gg/pi-plan-mode",
     "npm:pi-add-dir",
-    "npm:pi-reload-self"
+    "npm:pi-reload-self",
+    "npm:pi-web-access"
   ]
 }
