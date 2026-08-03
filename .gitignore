@@ -1,8 +1,14 @@
 # macOS Finder metadata
 .DS_Store
 
-# Local secrets loaded by shell configuration
+# Local secrets loaded by shell configuration or accidentally added credentials
 .config/secrets.env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
 
 # Development planning artifacts
 docs/

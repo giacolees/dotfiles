@@ -1,0 +1,7 @@
+# Repository tooling and documentation are not home-directory targets.
+README.md
+scripts/
+.pi/README.md
+
+# Never manage a machine-local secrets file, even if it is accidentally added.
+.config/secrets.env

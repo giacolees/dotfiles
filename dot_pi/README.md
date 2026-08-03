@@ -5,7 +5,7 @@ This directory snapshots the Pi extensions and extension settings from
 
 ## Refresh the snapshot
 
-Run this from the repository root whenever Pi extensions are added,
+Run this from the chezmoi source directory whenever Pi extensions are added,
 removed, or updated:
 
 ```sh
@@ -31,13 +31,10 @@ from suppressing the confirmation prompt.
 
 ## Restore on a new machine
 
-Copy `pi/agent/` into `~/.pi/agent/`, then install the locked extension
-dependencies:
+Run `chezmoi apply` to restore `dot_pi/agent/` into `~/.pi/agent/`, then
+install the locked extension dependencies:
 
 ```sh
-mkdir -p ~/.pi/agent
-rsync -a --exclude 'auth.json' --exclude 'models-store.json' \
-  --exclude 'sessions/' pi/agent/ ~/.pi/agent/
 (cd ~/.pi/agent/npm && npm ci --omit=dev)
 ```
 

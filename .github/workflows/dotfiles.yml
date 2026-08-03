@@ -1,0 +1,59 @@
+name: Validate dotfiles
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      target_os:
+        description: Operating system to validate
+        required: true
+        default: all
+        type: choice
+        options: [all, macos, ubuntu]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: ${{ matrix.os }} configuration
+    strategy:
+      fail-fast: false
+      matrix:
+        os: >-
+          ${{ fromJSON(github.event_name == 'workflow_dispatch' &&
+          (inputs.target_os == 'all' && '["macos-latest","ubuntu-latest"]' ||
+          format('["{0}-latest"]', inputs.target_os)) ||
+          '["macos-latest","ubuntu-latest"]') }}
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Install validation dependencies on macOS
+        if: runner.os == 'macOS'
+        run: brew install chezmoi
+      - name: Install validation dependencies on Ubuntu
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install --yes chezmoi zsh
+      - name: Validate rendered configuration
+        run: ./scripts/check-dotfiles.sh
+
+  secrets:
+    name: Scan checked-out source for secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+        with:
+          go-version: stable
+      - name: Install Gitleaks
+        run: go install github.com/gitleaks/gitleaks/v8@v8.21.2
+      - name: Scan working tree
+        run: >-
+          "$(go env GOPATH)/bin/gitleaks detect --source . --no-git --redact
+          --exit-code 1"

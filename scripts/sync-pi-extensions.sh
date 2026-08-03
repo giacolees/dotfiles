@@ -3,7 +3,7 @@ set -euo pipefail
 
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 source_dir="${HOME}/.pi/agent"
-target_dir="${repo_root}/pi/agent"
+target_dir="${repo_root}/dot_pi/agent"
 
 if [[ ! -d "${source_dir}" ]]; then
 	printf 'Pi agent directory does not exist: %s\n' "${source_dir}" >&2
