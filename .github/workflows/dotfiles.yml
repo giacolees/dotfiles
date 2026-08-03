@@ -37,7 +37,12 @@ jobs:
         run: brew install chezmoi
       - name: Install validation dependencies on Ubuntu
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install --yes chezmoi zsh
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes zsh
+          mkdir -p "$HOME/.local/bin"
+          sh -c "$(curl -fsLS get.chezmoi.io)" -- -b "$HOME/.local/bin"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Validate rendered configuration
         run: ./scripts/check-dotfiles.sh
 
@@ -52,8 +57,8 @@ jobs:
         with:
           go-version: stable
       - name: Install Gitleaks
-        run: go install github.com/gitleaks/gitleaks/v8@v8.21.2
+        run: go install github.com/zricethezav/gitleaks/v8@v8.21.2
       - name: Scan working tree
         run: >-
-          "$(go env GOPATH)/bin/gitleaks detect --source . --no-git --redact
-          --exit-code 1"
+          $(go env GOPATH)/bin/gitleaks detect --source . --no-git --redact
+          --exit-code 1
