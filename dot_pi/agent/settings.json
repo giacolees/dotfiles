@@ -4,11 +4,10 @@
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-5.6-terra",
   "packages": [
-    "npm:pi-chrono",
     "npm:pi-lens",
     "npm:@dreki-gg/pi-plan-mode",
     "npm:pi-add-dir",
-    "npm:pi-reload-self",
     "npm:pi-web-access"
-  ]
+  ],
+  "defaultThinkingLevel": "high"
 }
