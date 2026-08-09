@@ -5,10 +5,10 @@
   "defaultModel": "gpt-5.6-terra",
   "packages": [
     "npm:pi-lens",
-    "npm:@dreki-gg/pi-plan-mode",
-    "npm:@dreki-gg/pi-subagent",
     "npm:pi-add-dir",
-    "npm:pi-web-access"
+    "npm:pi-gpt-search",
+    "npm:pi-herdr-subagents",
+    "npm:@juicesharp/rpiv-todo"
   ],
   "defaultThinkingLevel": "high"
 }

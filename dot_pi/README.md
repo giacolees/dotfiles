@@ -16,13 +16,12 @@ The script intentionally excludes credentials, model caches, sessions, installed
 packages, other machine-local state, and Herdr's generated integration extension.
 Herdr recreates that extension when installed on a machine.
 
-## Plan workflow
+## Planning and task workflow
 
-The stack includes `@dreki-gg/pi-plan-mode` and its `@dreki-gg/pi-subagent`
-companion. Start a two-phase plan with `/plan <prompt>` (or `pi --plan`), then
-choose execution, refinement, or follow-up. Plans and handoff prompts are stored in
-`.taskman/plans/`; use `/workflow <task>` when a reviewed background subagent
-workflow is appropriate.
+`pi-herdr-subagents` provides the `/plan` workflow and asynchronous Herdr-backed
+subagents. `@juicesharp/rpiv-todo` keeps the current task list visible across
+reloads and compaction; use `/todos` to view it. The stack also includes Pi Lens,
+Pi Add Dir, and Pi GPT Search.
 
 ## Restore on a new machine
 
