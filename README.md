@@ -25,6 +25,9 @@ Pi extension packages are restored after apply with:
 (cd ~/.pi/agent/npm && npm ci --omit=dev)
 ```
 
+Use `/plan <prompt>` (or `pi --plan`) for the tracked two-phase plan workflow;
+plans and handoff prompts live in each project's `.taskman/plans/` directory.
+
 ## Secrets
 
 Never put secrets in this repository. Store per-device credentials in

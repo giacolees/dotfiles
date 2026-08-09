@@ -6,6 +6,7 @@
   "packages": [
     "npm:pi-lens",
     "npm:@dreki-gg/pi-plan-mode",
+    "npm:@dreki-gg/pi-subagent",
     "npm:pi-add-dir",
     "npm:pi-web-access"
   ],

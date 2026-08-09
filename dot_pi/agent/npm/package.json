@@ -3,6 +3,7 @@
   "private": true,
   "dependencies": {
     "@dreki-gg/pi-plan-mode": "^0.40.0",
+    "@dreki-gg/pi-subagent": "^0.19.0",
     "pi-add-dir": "^1.3.1",
     "pi-lens": "^3.8.71",
     "pi-web-access": "^0.18.0"

@@ -16,18 +16,13 @@ The script intentionally excludes credentials, model caches, sessions, installed
 packages, other machine-local state, and Herdr's generated integration extension.
 Herdr recreates that extension when installed on a machine.
 
-## Automatic GitHub updates
+## Plan workflow
 
-The `sync-dotfiles-on-pi-change` extension watches Pi settings, package manifests,
-and top-level extension files. After a change, it asks whether to synchronize,
-commit, and push only the Pi configuration to GitHub. It does not stage unrelated
-dotfiles changes.
-
-The extension expects this repository at `~/dotfiles`. Set `PI_DOTFILES_REPO` to
-use another checkout location. Restart Pi or run `/reload` after installing the
-extension. Pi package installation reloads resources, so the extension also compares
-the active configuration with this snapshot after startup; this prevents the reload
-from suppressing the confirmation prompt.
+The stack includes `@dreki-gg/pi-plan-mode` and its `@dreki-gg/pi-subagent`
+companion. Start a two-phase plan with `/plan <prompt>` (or `pi --plan`), then
+choose execution, refinement, or follow-up. Plans and handoff prompts are stored in
+`.taskman/plans/`; use `/workflow <task>` when a reviewed background subagent
+workflow is appropriate.
 
 ## Restore on a new machine
 
