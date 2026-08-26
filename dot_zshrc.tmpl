@@ -43,3 +43,24 @@ gif() {
 
 # Keep credentials in an untracked, per-machine file.
 [ -f "$XDG_CONFIG_HOME/secrets.env" ] && source "$XDG_CONFIG_HOME/secrets.env"
+
+# pi: shell-command suggestions (Ctrl+L) — single-output, non-interactive
+_pi_zsh() {
+  if [[ -n "$BUFFER" ]]; then
+    local _prev=$BUFFER
+    BUFFER+="⌛"
+    zle -I && zle redisplay
+    local _out
+    _out=$(command pi -p --no-session --no-tools --system-prompt 'You are a shell command generator. Given the user request, output ONLY the single shell command that fulfils it, with no explanation, no markdown, no code fences. If the request is already a shell command, improve or correct it.' -- "$_prev" 2>/dev/null)
+    # strip markdown fences if present and trim whitespace
+    _out=$(printf '%s' "$_out" | sed -e 's/^```[a-zA-Z0-9_-]*$//' -e 's/^```//' -e 's/```$//' | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+    if [[ -n "$_out" ]]; then
+      BUFFER=$_out
+    else
+      BUFFER=$_prev
+    fi
+    zle end-of-line
+  fi
+}
+zle -N _pi_zsh
+bindkey ^l _pi_zsh
