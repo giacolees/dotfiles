@@ -13,15 +13,20 @@ removed, or updated:
 ```
 
 The script intentionally excludes credentials, model caches, sessions, installed
-packages, other machine-local state, and Herdr's generated integration extension.
-Herdr recreates that extension when installed on a machine.
+packages, other machine-local state, and Herdr's generated `herdr-agent-state.ts`
+integration. Herdr recreates that file when installed on a machine. The Herdr
+auto-title hook (`herdr-auto-title.ts`) is snapshotted; it no-ops on machines
+without the Herdr generator.
 
-## Planning and task workflow
+## Extensions
 
-`pi-herdr-subagents` provides the `/plan` workflow and asynchronous Herdr-backed
-subagents. `@juicesharp/rpiv-todo` keeps the current task list visible across
-reloads and compaction; use `/todos` to view it. The stack also includes Pi Lens,
-Pi Add Dir, and Pi GPT Search.
+`pi-herdr-agents` provides asynchronous Herdr-backed subagents and approved
+review workflows, including `/plan`. `@narumitw/pi-btw` opens side-thread
+questions via `/btw` without derailing the main task. `@upstash/context7-pi`
+adds up-to-date library documentation lookups (`/c7-docs`). The stack also
+includes Pi Lens (diagnostics and code intelligence), Pi Add Dir, Pi GPT Search
+(web search for any model), the OpenCode provider bridge, and Pi Redact All
+(secret/PII redaction across tool outputs).
 
 ## Restore on a new machine
 

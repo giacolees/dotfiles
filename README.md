@@ -25,8 +25,8 @@ Pi extension packages are restored after apply with:
 (cd ~/.pi/agent/npm && npm ci --omit=dev)
 ```
 
-Use `/plan` for the Herdr-backed planning workflow and `/todos` to view the
-persistent task list provided by the Pi extensions.
+Use `/plan` for the Herdr-backed planning workflow and `/btw` for side-thread
+questions provided by the Pi extensions.
 
 ## Secrets
 
